@@ -1,6 +1,6 @@
+from dash import Dash, html, dcc, callback, Input, Output
 import numpy as np 
 import pandas as pd 
-import matplotlib.pyplot as plt
 import plotly.express as px
 
 app = Dash(__name__)
