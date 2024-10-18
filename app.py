@@ -3,7 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-df = pd.read_csv("/kaggle/input/gdp-of-all-countries19602020/gdp_1960_2020.csv")
+app = Dash(__name__)
+app.title = "Assignment 3 Ameer"
+server = app.server
+
+df = pd.read_csv("https://raw.githubusercontent.com/Sufilyas/MCM7183Exercise3/main/assets/gdp_1960_2020.csv")
 
 df.head()
 
@@ -12,6 +16,12 @@ subset = df[df['country'].isin(["Malaysia"])]
 subset.head()
 
 subset.tail()
+
+average = np.mean(df['gdp'])
+
+print(average)
+
+np.median(df['gdp'])
 
 px.bar(subset, x="year", y= "gdp")
 
@@ -37,4 +47,3 @@ pie_df = {'Continent': mylabels,
         'GDP': pie_data}
 
 px.pie(pie_df,values="GDP",names="Continent")
-
