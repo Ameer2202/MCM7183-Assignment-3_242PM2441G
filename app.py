@@ -7,43 +7,51 @@ app = Dash(__name__)
 app.title = "Assignment 3 Ameer"
 server = app.server
 
-df = pd.read_csv("https://raw.githubusercontent.com/Sufilyas/MCM7183Exercise3/main/assets/gdp_1960_2020.csv")
+df = pd.read_csv("https://raw.githubusercontent.com/Ameer2202/MCM7183Exercise3/main/assets/gdp_1960_2020.csv")
 
-df.head()
 
-subset = df[df['country'].isin(["Malaysia"])]
 
-subset.head()
 
-subset.tail()
 
-average = np.mean(df['gdp'])
+image_path = 'assets/Multimedia_University_logo.png'
 
-print(average)
+app.layout = [html.H1('Assignment 3'), 
+              html.Img(src=image_path),
+              html.Div(id='debug'),
+              dcc.Dropdown(['Malaysia', 'Indonesia', 'China'], 
+                           'Malaysia', id='dropdown-country'), 
+              dcc.Graph(id="graph-scatter"), 
+              dcc.Dropdown([{'label':'2020', 'value': 2020}, 
+                            {'label':'2010', 'value': 2010}, 
+                            {'label':'2000', 'value': 2000}], 
+                            2020, id='dropdown-year'), 
+              dcc.Graph(id="graph-pie")]
 
-np.median(df['gdp'])
+@callback(
+    Output('graph-scatter','figure'),
+    Output('graph-pie','figure'),
+    #Output('debug','children'),
+    Input('dropdown-country', 'value'),
+    Input('dropdown-year', 'value'),
+)
+def update_graph(country_selected, year_selected):
 
-px.bar(subset, x="year", y= "gdp")
+    # Scatter plot
+    subset_Country = df[df['country'].isin([country_selected])]
+    fig = px.scatter(subset_Country, x = "year", y = "gdp")
 
-px.scatter(subset, x="year",y="gdp")
-
-plt.scatter(subset ['year'],subset ['gdp'])
-
-subset_2020 = df[df['year'].isin([2020])]
-
-subset_2020_Asia = subset_2020[subset_2020['state'].isin(["Asia"])]
-subset_2020_Africa = subset_2020[subset_2020['state'].isin(["Africa"])]
-subset_2020_America = subset_2020[subset_2020['state'].isin(["America"])]
-subset_2020_Europe = subset_2020[subset_2020['state'].isin(["Europe"])]
-subset_2020_Oceania = subset_2020[subset_2020['state'].isin(["Oceania"])]
-
-pie_data = [sum(subset_2020_Asia['gdp']),sum(subset_2020_Africa['gdp']),sum(subset_2020_America['gdp']),
-            sum(subset_2020_Europe['gdp']),sum(subset_2020_Oceania['gdp'])];
-
-mylabels = ["Asia", "Africa", "America", "Europe","Oceania"]
-plt.pie(pie_data, labels = mylabels)
-
-pie_df = {'Continent': mylabels,
-        'GDP': pie_data}
-
-px.pie(pie_df,values="GDP",names="Continent")
+    # Pie Chart
+    subset_year = df[df['year'].isin([year_selected])]
+    subset_year_Asia = subset_year[subset_year['state'].isin(["Asia"])]
+    subset_year_Africa = subset_year[subset_year['state'].isin(["Africa"])]
+    subset_year_America = subset_year[subset_year['state'].isin(["America"])]
+    subset_year_Europe = subset_year[subset_year['state'].isin(["Europe"])]
+    subset_year_Oceania = subset_year[subset_year['state'].isin(["Oceania"])]
+    pie_data = [sum(subset_year_Asia['gdp']),
+                sum(subset_year_Africa['gdp']),
+                sum(subset_year_America['gdp']),
+                sum(subset_year_Europe['gdp']),
+                sum(subset_year_Oceania['gdp'])];
+    mylabels = ["Asia","Africa","America","Europe","Oceania"]
+    pie_df = {'Continent': mylabels,'GDP': pie_data}
+    fig2 = px.pie(pie_df,values = "GDP", names = "Continent")
